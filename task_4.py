@@ -1,6 +1,7 @@
 """Module providing functions building tree from heap"""
 import heapq
 import uuid
+from matplotlib import pylab
 import networkx as nx
 import matplotlib.pyplot as plt
 
@@ -30,18 +31,25 @@ def add_edges(graph, node, pos, x=0, y=0, layer=1):
             r = add_edges(graph, node.right, pos, x=r, y=y - 1, layer=layer + 1)
     return graph
 
-def draw_tree(tree_root):
+def draw_tree(tree_root, colors=None, isDelay=False, window_title="Heap tree visualization"):
     """Draw the binary tree using matplotlib and networkx."""
     tree = nx.DiGraph()
     pos = {tree_root.id: (0, 0)}
     tree = add_edges(tree, tree_root, pos)
 
-    colors = [node[1]['color'] for node in tree.nodes(data=True)]
+    node_colors = [colors[node[0]] if colors and node[0] in colors \
+                   else node[1]['color'] for node in tree.nodes(data=True)]
     labels = {node[0]: node[1]['label'] for node in tree.nodes(data=True)}
 
-    plt.figure(figsize=(8, 5))
-    nx.draw(tree, pos=pos, labels=labels, arrows=False, node_size=2500, node_color=colors)
-    plt.show()
+    plt.figure(window_title, figsize=(8, 5))
+    nx.draw(tree, pos=pos, labels=labels, arrows=False, node_size=2500, node_color=node_colors)
+    if isDelay:
+        plt.show(block=False)
+        plt.pause(1)
+        plt.close()
+    else:
+        plt.show()
+
 
 def build_heap_tree(heap):
     """Build a binary tree from a binary heap for visualization."""
